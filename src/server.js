@@ -20,7 +20,18 @@ const server = app.listen(PORT, handleListening);
 
 const io = socketIO.listen(server);
 
+/*
+socket이 newMessage라는 이벤트를 보내면 내가 보낸 메시지와 함께 messageNotif라는 이벤트를 broadcast한다.
+*/
 io.on("connection", socket => {
-    socket.on("helloGuys", () => console.log("the client said hello"));
+    socket.on("newMessage", ({ message }) => {
+        socket.broadcast.emit("messageNotif", { 
+            message, 
+            nickname: socket.nickname || "Anon"
+        });
+    });
+    socket.on("setNickname", ({ nickname }) => {
+        socket.nickname = nickname;
+    });
 });
 
